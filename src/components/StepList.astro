@@ -4,6 +4,7 @@ interface StepItem {
   title: string;
   text: string;
   href?: string;
+  actionText?: string;
 }
 
 interface Props {
@@ -25,7 +26,7 @@ const { items } = Astro.props;
         <p>{item.text}</p>
         {item.href && (
           <a class="step-link" href={item.href}>
-            打开对应页面
+            {item.actionText ?? "看这一步"}
           </a>
         )}
       </li>
