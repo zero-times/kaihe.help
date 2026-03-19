@@ -1,0 +1,160 @@
+---
+import type { CollectionEntry } from "astro:content";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import RelatedPages from "@/components/RelatedPages.astro";
+
+interface HeadingItem {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  entry: CollectionEntry<"pages">;
+  headings?: HeadingItem[];
+}
+
+const { entry, headings = [] } = Astro.props;
+
+const formatDate = (value: Date) =>
+  new Intl.DateTimeFormat("zh-CN", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(value);
+
+const pageUrl = new URL(`/${entry.id}`, Astro.site?.toString() ?? "https://kaihe.help").toString();
+const articleSchemas: unknown[] = [
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "首页",
+        item: "https://kaihe.help/",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: entry.data.title,
+        item: pageUrl,
+      },
+    ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: entry.data.title,
+    description: entry.data.description,
+    datePublished: entry.data.pubDate.toISOString(),
+    dateModified: entry.data.updatedDate.toISOString(),
+    mainEntityOfPage: pageUrl,
+    inLanguage: "zh-CN",
+    author: {
+      "@type": "Organization",
+      name: "开盒应对",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "开盒应对",
+      url: "https://kaihe.help",
+    },
+    about: ["被开盒", "网络暴力", "个人信息泄露", "应对指南"],
+  },
+];
+
+if (entry.data.faq?.length) {
+  articleSchemas.push({
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: entry.data.faq.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer,
+      },
+    })),
+  });
+}
+---
+
+<BaseLayout
+  title={entry.data.title}
+  description={entry.data.description}
+  type="article"
+  jsonLd={articleSchemas}
+>
+  <article class="article-shell">
+    <div class="article-grid">
+      <div class="article-main">
+        <p class="article-tag">第一小时处理指南</p>
+        <h1 class="article-title">{entry.data.title}</h1>
+        <p class="article-summary">{entry.data.description}</p>
+
+        <div class="article-meta">
+          <span>发布时间：<time datetime={entry.data.pubDate.toISOString()}>{formatDate(entry.data.pubDate)}</time></span>
+          <span>最后更新：<time datetime={entry.data.updatedDate.toISOString()}>{formatDate(entry.data.updatedDate)}</time></span>
+        </div>
+
+        <div class="article-body prose">
+          <slot />
+        </div>
+
+        {
+          entry.data.faq?.length ? (
+            <section class="faq-section" aria-labelledby="faq-title">
+              <div class="section-heading-group">
+                <p class="section-tag">常见问题</p>
+                <h2 id="faq-title" class="section-heading">FAQ</h2>
+              </div>
+              <div class="faq-list">
+                {entry.data.faq.map((item) => (
+                  <details class="faq-item">
+                    <summary>{item.question}</summary>
+                    <p>{item.answer}</p>
+                  </details>
+                ))}
+              </div>
+            </section>
+          ) : null
+        }
+
+        <RelatedPages relatedPages={entry.data.relatedPages} />
+      </div>
+
+      <aside class="article-aside">
+        <section class="aside-card" aria-labelledby="warning-title">
+          <p class="aside-label">先判断风险</p>
+          <h2 id="warning-title">这些情况不要拖</h2>
+          <ul class="aside-list">
+            <li>已经出现住址、学校、单位或家人联系方式。</li>
+            <li>出现线下围堵、跟踪、敲诈或人身威胁。</li>
+            <li>未成年人信息被公开，或已有多人转发扩散。</li>
+          </ul>
+          <p class="aside-note">这类情况先保留证据，再尽快联系平台并报警。</p>
+        </section>
+
+        {
+          headings.length ? (
+            <section class="aside-card" aria-labelledby="toc-title">
+              <p class="aside-label">本页目录</p>
+              <h2 id="toc-title">按顺序处理</h2>
+              <ol class="toc-list">
+                {headings
+                  .filter((item) => item.depth === 2)
+                  .map((item) => (
+                    <li>
+                      <a href={`#${item.slug}`}>{item.text}</a>
+                    </li>
+                  ))}
+              </ol>
+            </section>
+          ) : null
+        }
+      </aside>
+    </div>
+  </article>
+</BaseLayout>

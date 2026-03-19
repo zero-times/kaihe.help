@@ -1,0 +1,34 @@
+---
+interface StepItem {
+  label: string;
+  title: string;
+  text: string;
+  href?: string;
+}
+
+interface Props {
+  items: StepItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<ol class="step-list">
+  {
+    items.map((item, index) => (
+      <li class="step-card" style={`--step-index:${index + 1}`}>
+        <div class="step-topline">
+          <span class="step-index">0{index + 1}</span>
+          <span class="step-label">{item.label}</span>
+        </div>
+        <h3>{item.title}</h3>
+        <p>{item.text}</p>
+        {item.href && (
+          <a class="step-link" href={item.href}>
+            打开对应页面
+          </a>
+        )}
+      </li>
+    ))
+  }
+</ol>

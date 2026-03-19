@@ -1,0 +1,32 @@
+---
+interface RelatedPage {
+  slug: string;
+  title: string;
+}
+
+interface Props {
+  relatedPages: RelatedPage[];
+}
+
+const { relatedPages } = Astro.props;
+---
+
+<aside class="related-pages" aria-labelledby="related-pages-title">
+  <div class="section-heading-group">
+    <p class="section-tag">继续处理</p>
+    <h2 id="related-pages-title" class="section-heading">相关推荐</h2>
+    <p class="section-lede">从“先止损”继续往下看，别一次处理太多，按当前问题往前走就够了。</p>
+  </div>
+
+  <div class="related-grid">
+    {
+      relatedPages.map((page) => (
+        <a class="related-card" href={`/${page.slug}`}>
+          <span class="related-kicker">相关页面</span>
+          <strong>{page.title}</strong>
+          <span class="related-link">继续查看</span>
+        </a>
+      ))
+    }
+  </div>
+</aside>

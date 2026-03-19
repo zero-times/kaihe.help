@@ -1,0 +1,86 @@
+---
+import Footer from "@/components/Footer.astro";
+import Header from "@/components/Header.astro";
+import "@/styles/global.css";
+
+interface Props {
+  title: string;
+  description: string;
+  type?: "website" | "article";
+  image?: string;
+  noindex?: boolean;
+  jsonLd?: unknown[];
+}
+
+const {
+  title,
+  description,
+  type = "website",
+  image = "/og-cover.svg",
+  noindex = false,
+  jsonLd = [],
+} = Astro.props;
+
+const siteUrl = Astro.site?.toString() ?? "https://kaihe.help";
+const canonicalUrl = new URL(Astro.url.pathname, siteUrl).toString();
+const socialImage = new URL(image, siteUrl).toString();
+const pageTitle = title.includes("kaihe.help") ? title : `${title} | kaihe.help`;
+
+const siteSchemas = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "开盒应对",
+    alternateName: "kaihe.help",
+    url: siteUrl,
+    description:
+      "面向被开盒、被网暴和信息泄露场景的第一小时处理指南，优先给出可执行步骤、误区提醒和进一步入口。",
+    inLanguage: "zh-CN",
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "开盒应对",
+    url: siteUrl,
+    logo: new URL("/favicon.svg", siteUrl).toString(),
+  },
+];
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="color-scheme" content="light dark" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={socialImage} />
+    <meta property="og:site_name" content="开盒应对" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImage} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    {[...siteSchemas, ...jsonLd].map((schema) => (
+      <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
+    ))}
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">跳到正文</a>
+    <div class="site-shell">
+      <Header />
+      <main id="main-content" class="site-main">
+        <slot />
+      </main>
+      <Footer />
+    </div>
+  </body>
+</html>

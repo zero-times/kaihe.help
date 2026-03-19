@@ -1,0 +1,164 @@
+---
+import { getCollection, getEntry, render } from "astro:content";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import StepList from "@/components/StepList.astro";
+
+const homeEntry = await getEntry("pages", "index");
+
+if (!homeEntry) {
+  throw new Error("Missing home page content entry.");
+}
+
+const { Content } = await render(homeEntry);
+const allEntries = await getCollection("pages", ({ id }) => id !== "index");
+
+const order = [
+  "what-to-do-after-doxxing",
+  "phone-number-exposed",
+  "family-info-exposed",
+  "report-or-police-first",
+  "how-to-report-12377",
+  "first-30-minutes-checklist",
+  "evidence-checklist",
+  "family-message-template",
+];
+
+const orderedEntries = order
+  .map((slug) => allEntries.find((entry) => entry.id === slug))
+  .filter((entry): entry is (typeof allEntries)[number] => Boolean(entry));
+
+const quickSteps = [
+  {
+    label: "先留证",
+    title: "把页面、账号、时间先固定下来",
+    text: "截图前后文、复制链接、录一段滚动视频，先保留原始状态，不要只截单张图。",
+    href: "/evidence-checklist",
+  },
+  {
+    label: "先控扩散",
+    title: "先处理还没继续外溢的入口",
+    text: "优先改隐私设置、关闭公开入口、提醒家人朋友暂时别回应陌生联系。",
+    href: "/what-to-do-after-doxxing",
+  },
+  {
+    label: "先分流",
+    title: "判断该举报、申诉还是尽快报警",
+    text: "没有明显线下风险时先平台处理；出现威胁、住址、学校或家人信息时别拖。",
+    href: "/report-or-police-first",
+  },
+  {
+    label: "先通知",
+    title: "只提醒必要的人，不要大范围转述",
+    text: "把风险和统一话术发给家人或朋友，避免他们因慌乱而主动暴露更多信息。",
+    href: "/family-message-template",
+  },
+];
+
+const scenarioCards = [
+  {
+    title: "我已经被开盒了",
+    text: "先按顺序止损，不要边慌边回击。先看总流程，再补细项处理。",
+    href: "/what-to-do-after-doxxing",
+  },
+  {
+    title: "我怀疑手机号或隐私被挂了",
+    text: "先判断扩散范围，再决定要不要同步提醒家人和关闭哪些公开入口。",
+    href: "/phone-number-exposed",
+  },
+  {
+    title: "我是在帮家人或朋友处理",
+    text: "优先做通知、分工和统一回复，避免好心帮忙的人越帮越乱。",
+    href: "/family-info-exposed",
+  },
+];
+
+const homeSchema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: homeEntry.data.title,
+    description: homeEntry.data.description,
+    url: "https://kaihe.help/",
+    inLanguage: "zh-CN",
+  },
+];
+---
+
+<BaseLayout title={homeEntry.data.title} description={homeEntry.data.description} jsonLd={homeSchema}>
+  <section class="hero">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <p class="hero-tag">低成本验证中的应急指南站</p>
+        <h1 class="hero-title">{homeEntry.data.title}</h1>
+        <p class="hero-lede">{homeEntry.data.description}</p>
+        <div class="hero-actions">
+          <a class="primary-button" href="/first-30-minutes-checklist">先看 30 分钟处理清单</a>
+          <a class="secondary-button" href="/what-to-do-after-doxxing">直接进入总流程</a>
+        </div>
+        <p class="hero-note">
+          如果已经出现人身威胁、线下接触、敲诈、未成年人信息泄露或家人联系方式扩散，请先留证，再尽快报警。
+        </p>
+      </div>
+
+      <div class="hero-panel">
+        <div class="manual-card">
+          <p class="manual-tag">首屏先看</p>
+          <h2>先做这 4 步</h2>
+          <StepList items={quickSteps} />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="content-section">
+    <div class="section-heading-group">
+      <p class="section-tag">先找到自己的入口</p>
+      <h2 class="section-heading">按情境进入，不要全站乱看</h2>
+      <p class="section-lede">你现在最需要的不是更多信息，而是更少的犹豫。先选最接近的场景，按页面一步一步处理。</p>
+    </div>
+
+    <div class="scenario-grid">
+      {
+        scenarioCards.map((item) => (
+          <a class="scenario-card" href={item.href}>
+            <span class="scenario-kicker">情境入口</span>
+            <strong>{item.title}</strong>
+            <p>{item.text}</p>
+            <span class="scenario-link">进入页面</span>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="content-section editorial-block">
+    <div class="section-heading-group">
+      <p class="section-tag">这个站先解决什么</p>
+      <h2 class="section-heading">不是解释概念，而是帮你先稳住前 30 分钟</h2>
+    </div>
+    <div class="editorial-prose prose">
+      <Content />
+    </div>
+  </section>
+
+  <section class="content-section">
+    <div class="section-heading-group">
+      <p class="section-tag">核心页面</p>
+      <h2 class="section-heading">把高频问题拆成单页，方便搜索和转发</h2>
+      <p class="section-lede">每一页都尽量先给结论，再给步骤，再补误区和下一步入口。</p>
+    </div>
+
+    <div class="page-grid">
+      {
+        orderedEntries.map((entry) => (
+          <a class="page-card" href={`/${entry.id}`}>
+            <span class="page-card-tag">指南页面</span>
+            <strong>{entry.data.title}</strong>
+            <p>{entry.data.description}</p>
+            <span class="page-card-link">查看页面</span>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+</BaseLayout>

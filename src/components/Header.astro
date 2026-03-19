@@ -1,0 +1,45 @@
+---
+const pathname = Astro.url.pathname;
+
+const navItems = [
+  { href: "/", label: "首页" },
+  { href: "/what-to-do-after-doxxing", label: "被开盒了怎么办" },
+  { href: "/first-30-minutes-checklist", label: "30 分钟清单" },
+  { href: "/evidence-checklist", label: "留证清单" },
+  { href: "/how-to-report-12377", label: "12377 举报" },
+];
+---
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="/">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-text">
+        <strong>开盒应对</strong>
+        <span>kaihe.help</span>
+      </span>
+    </a>
+
+    <nav class="site-nav" aria-label="主导航">
+      <ul class="nav-list">
+        {
+          navItems.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                class:list={["nav-link", pathname === item.href && "is-active"]}
+                aria-current={pathname === item.href ? "page" : undefined}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <a class="header-cta" href="/first-30-minutes-checklist">
+      先看清单
+    </a>
+  </div>
+</header>
