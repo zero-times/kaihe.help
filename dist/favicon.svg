@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
-  <title id="title">开盒应对 favicon</title>
-  <desc id="desc">暖色纸张背景上的深色方块与警示红标记。</desc>
-  <rect width="128" height="128" rx="28" fill="#f6efe2" />
-  <rect x="26" y="26" width="76" height="76" rx="18" fill="#15181d" />
-  <path d="M42 42h44v44H42z" fill="#f6efe2" opacity="0.08" />
-  <path d="M72 34h22v22H72z" fill="#a83721" />
-</svg>

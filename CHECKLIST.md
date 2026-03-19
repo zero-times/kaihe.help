@@ -29,8 +29,8 @@
 - [x] 配置 Markdown frontmatter 规范（title / description / pubDate / relatedPages / faq）
 - [x] 配置暗色模式（`prefers-color-scheme: dark`）
 - [x] 配置 `public/CNAME`
-- [ ] **添加 `.gitignore` 文件**（当前缺失，`node_modules`、`dist`、`.astro`、`.DS_Store` 应被忽略）
-- [ ] **接入站点统计工具**（Google Analytics 或 Plausible，当前未接入）
+- [x] **添加 `.gitignore` 文件**（已忽略 `node_modules/`、`dist/`、`.astro/`、`.DS_Store` 等本地与构建文件）
+- [x] **接入站点统计工具**（已接入 Google Analytics 4：`G-2B0JDWPC8R`，生产环境加载）
 
 ---
 
@@ -107,17 +107,16 @@
 
 ### P0 — 上线前应修复
 
-- [ ] **添加 `.gitignore`**
-  - 当前缺失，`node_modules/`、`dist/`、`.astro/`、`.DS_Store` 等不应被版本控制。
+- [x] **添加 `.gitignore`**
+  - 已添加根目录 `.gitignore`，排除了 `node_modules/`、`dist/`、`.astro/`、`.DS_Store` 等文件。
 
-- [ ] **接入统计工具**
-  - 没有统计 = 无法验证核心假设（是否有自然搜索进入、哪些页面最受关注）。
-  - 推荐 Google Analytics 4 或 Plausible（轻量、隐私友好、GDPR 无忧）。
-  - Plausible 可作为 `<script>` 标签加到 BaseLayout 的 `<head>` 中。
+- [x] **接入统计工具**
+  - 已在 `BaseLayout.astro` 中接入 Google Analytics 4（`G-2B0JDWPC8R`）。
+  - 当前配置为仅在生产环境加载，避免本地开发流量污染统计。
 
-- [ ] **OG 图片格式问题**
-  - 当前 `og-cover.svg` 是 SVG 格式，大多数社交平台（微信、微博、Twitter/X、Telegram）不支持 SVG 作为 OG 图片。
-  - 需要导出为 PNG 或 JPG（推荐 1200×630 PNG），替换 `public/og-cover.svg` 为 `public/og-cover.png`，并更新 BaseLayout 中的默认 image 路径。
+- [x] **OG 图片格式问题**
+  - 已导出 `public/og-cover.png`（1200×630）并将默认 `og:image` 路径切换为 PNG。
+  - SVG 原文件保留为设计源，社交分享默认使用 PNG。
 
 ### P1 — 尽快补充
 
@@ -198,9 +197,9 @@
 - [x] 2 个辅助页面已上线
 - [x] GitHub Actions 自动部署已配置
 - [x] 基础 SEO 配置完成（title / description / sitemap / schema）
-- [ ] **统计工具已接入** ← 阻塞验证
+- [x] **统计工具已接入**
 - [ ] **Google Search Console 已提交** ← 阻塞验证
-- [ ] **OG 图片已替换为 PNG** ← 影响社交分享效果
+- [x] **OG 图片已替换为 PNG**
 - [ ] 可以开始收集第一轮真实访问与搜索表现
 
 ---
